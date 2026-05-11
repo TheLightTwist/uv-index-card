@@ -1,4 +1,9 @@
-import { ActionConfig, LovelaceCard, LovelaceCardConfig, LovelaceCardEditor } from 'custom-card-helpers';
+import {
+  ActionConfig,
+  LovelaceCard,
+  LovelaceCardConfig,
+  LovelaceCardEditor,
+} from 'custom-card-helpers';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -7,7 +12,8 @@ declare global {
   }
 }
 
-// TODO Add your configuration elements here for type-checking
+export type UVIndexCardLayout = 'full' | 'compact' | 'icon';
+
 export interface UVIndexCardConfig extends LovelaceCardConfig {
   type: string;
   name?: string;
@@ -16,6 +22,11 @@ export interface UVIndexCardConfig extends LovelaceCardConfig {
   test_gui?: boolean;
   entity?: string;
   language?: string;
+  layout?: UVIndexCardLayout;
+  show_name?: boolean;
+  show_index?: boolean;
+  show_risk?: boolean;
+  decimals?: number;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;

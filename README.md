@@ -55,6 +55,34 @@ entity: sensor.weather_station_uv
 
 ![Default](https://github.com/t1gr0u/uv-index-card/blob/master/docs/images/uv-index-card.png?raw=true)
 
+### Compact layout
+
+```yaml
+type: custom:uv-index-card
+entity: sensor.openuv_current_uv_index
+layout: compact
+name: UV Index
+decimals: 1
+show_name: true
+show_index: true
+show_risk: true
+show_warning: false
+show_error: false
+```
+
+### Icon-only layout
+
+```yaml
+type: custom:uv-index-card
+entity: sensor.openuv_current_uv_index
+layout: icon
+show_name: false
+show_index: false
+show_risk: false
+```
+
+`show_name`, `show_index`, and `show_risk` apply to layouts where those elements exist. The `decimals` option controls UV index formatting and defaults to `1`.
+
 
 ## Options
 
@@ -66,6 +94,11 @@ entity: sensor.weather_station_uv
 | show_warning      | boolean | **Optional** | Show what a warning looks like for the card | `false`             |
 | entity            | string  | **Required** | Home Assistant entity ID.                   | `none`              |
 | language          | string  | **Optional** | The 2 character that determines the language| `en`                |
+| layout            | string  | **Optional** | Card layout: `full`, `compact`, or `icon`   | `full`              |
+| show_name         | boolean | **Optional** | Show the configured card name               | `true`              |
+| show_index        | boolean | **Optional** | Show the numeric UV index                   | `true`              |
+| show_risk         | boolean | **Optional** | Show the localized UV risk label            | `true`              |
+| decimals          | number  | **Optional** | Number of decimal places, from `0` to `3`   | `1`                 |
 | tap_action        | object  | **Optional** | Action to take on tap                       | `action: more-info` |
 | hold_action       | object  | **Optional** | Action to take on hold                      | `none`              |
 | double_tap_action | object  | **Optional** | Action to take on double tap                | `none`              |

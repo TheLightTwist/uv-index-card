@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LitElement, html, TemplateResult, css, CSSResultGroup } from 'lit';
-import { HomeAssistant, fireEvent, LovelaceCardEditor } from 'custom-card-helpers';
-
-import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
-import { UVIndexCardConfig } from './types';
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators';
+import { HomeAssistant, LovelaceCardEditor, fireEvent } from 'custom-card-helpers';
+import { ScopedRegistryHost } from '@lit-labs/scoped-registry-mixin';
+
 import { formfieldDefinition } from '../elements/formfield';
 import { selectDefinition } from '../elements/select';
 import { switchDefinition } from '../elements/switch';
 import { textfieldDefinition } from '../elements/textfield';
+
 import { CARD_LANGUAGES } from './localize/localize';
+import { UVIndexCardConfig, UVIndexCardLayout } from './types';
 
 @customElement('uv-index-card-editor')
 export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements LovelaceCardEditor {
@@ -30,7 +31,6 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
 
   public setConfig(config: UVIndexCardConfig): void {
     this._config = config;
-
     this.loadCardHelpers();
   }
 
@@ -42,23 +42,43 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
     return true;
   }
 
-  get _name(): string {
+  private get _name(): string {
     return this._config?.name || '';
   }
 
-  get _entity(): string {
+  private get _entity(): string {
     return this._config?.entity || '';
   }
 
-  get _language(): string {
+  private get _language(): string {
     return this._config?.language || '';
   }
 
-  get _show_warning(): boolean {
+  private get _layout(): UVIndexCardLayout {
+    return this._config?.layout || 'full';
+  }
+
+  private get _decimals(): number {
+    return this._config?.decimals ?? 1;
+  }
+
+  private get _show_name(): boolean {
+    return this._config?.show_name ?? true;
+  }
+
+  private get _show_index(): boolean {
+    return this._config?.show_index ?? true;
+  }
+
+  private get _show_risk(): boolean {
+    return this._config?.show_risk ?? true;
+  }
+
+  private get _show_warning(): boolean {
     return this._config?.show_warning || false;
   }
 
-  get _show_error(): boolean {
+  private get _show_error(): boolean {
     return this._config?.show_error || false;
   }
 
@@ -67,8 +87,8 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
       return html``;
     }
 
-    // You can restrict on domain type
     const entities = Object.keys(this.hass.states);
+    const layouts: UVIndexCardLayout[] = ['full', 'compact', 'icon'];
 
     return html`
       <mwc-select
@@ -78,18 +98,41 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
         .configValue=${'entity'}
         .value=${this._entity}
         @selected=${this._valueChanged}
-        @closed=${(ev) => ev.stopPropagation()}
+        @closed=${(ev: Event) => ev.stopPropagation()}
       >
-        ${entities.map((entity) => {
-          return html`<mwc-list-item .value=${entity}>${entity}</mwc-list-item>`;
-        })}
+        ${entities.map((entity) => html`<mwc-list-item .value=${entity}>${entity}</mwc-list-item>`)}
       </mwc-select>
+
       <mwc-textfield
         label="Name (Optional)"
         .value=${this._name}
         .configValue=${'name'}
         @input=${this._valueChanged}
       ></mwc-textfield>
+
+      <mwc-select
+        naturalMenuWidth
+        fixedMenuPosition
+        label="Layout"
+        .configValue=${'layout'}
+        .value=${this._layout}
+        @selected=${this._valueChanged}
+        @closed=${(ev: Event) => ev.stopPropagation()}
+      >
+        ${layouts.map((layout) => html`<mwc-list-item .value=${layout}>${layout}</mwc-list-item>`)}
+      </mwc-select>
+
+      <mwc-textfield
+        label="Decimals"
+        type="number"
+        min="0"
+        max="3"
+        step="1"
+        .value=${String(this._decimals)}
+        .configValue=${'decimals'}
+        @input=${this._valueChanged}
+      ></mwc-textfield>
+
       <mwc-select
         naturalMenuWidth
         fixedMenuPosition
@@ -97,22 +140,46 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
         .configValue=${'language'}
         .value=${this._language}
         @selected=${this._valueChanged}
-        @closed=${(ev) => ev.stopPropagation()}
+        @closed=${(ev: Event) => ev.stopPropagation()}
       >
-        ${CARD_LANGUAGES.map((languageItem) => {
-          return html`<mwc-list-item .value=${languageItem}>${languageItem}</mwc-list-item>`;
-        })}
+        ${CARD_LANGUAGES.map((languageItem) => html`<mwc-list-item .value=${languageItem}>${languageItem}</mwc-list-item>`)}
       </mwc-select>
-      <mwc-formfield .label=${`Toggle warning ${this._show_warning ? 'off' : 'on'}`}>
+
+      <mwc-formfield label="Show name">
         <mwc-switch
-          .checked=${this._show_warning !== false}
+          .checked=${this._show_name}
+          .configValue=${'show_name'}
+          @change=${this._valueChanged}
+        ></mwc-switch>
+      </mwc-formfield>
+
+      <mwc-formfield label="Show index">
+        <mwc-switch
+          .checked=${this._show_index}
+          .configValue=${'show_index'}
+          @change=${this._valueChanged}
+        ></mwc-switch>
+      </mwc-formfield>
+
+      <mwc-formfield label="Show risk">
+        <mwc-switch
+          .checked=${this._show_risk}
+          .configValue=${'show_risk'}
+          @change=${this._valueChanged}
+        ></mwc-switch>
+      </mwc-formfield>
+
+      <mwc-formfield label="Show warning">
+        <mwc-switch
+          .checked=${this._show_warning}
           .configValue=${'show_warning'}
           @change=${this._valueChanged}
         ></mwc-switch>
       </mwc-formfield>
-      <mwc-formfield .label=${`Toggle error ${this._show_error ? 'off' : 'on'}`}>
+
+      <mwc-formfield label="Show error">
         <mwc-switch
-          .checked=${this._show_error !== false}
+          .checked=${this._show_error}
           .configValue=${'show_error'}
           @change=${this._valueChanged}
         ></mwc-switch>
@@ -124,6 +191,7 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
     if (this.hass === undefined) return;
     if (this._config === undefined) return;
     if (this._helpers === undefined) return;
+
     this._initialized = true;
   }
 
@@ -131,26 +199,45 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
     this._helpers = await (window as any).loadCardHelpers();
   }
 
-  private _valueChanged(ev): void {
+  private _valueChanged(ev: Event): void {
     if (!this._config || !this.hass) {
       return;
     }
-    const target = ev.target;
-    if (this[`_${target.configValue}`] === target.value) {
+
+    const target = ev.target as any;
+    const configValue = target.configValue;
+
+    if (!configValue) {
       return;
     }
-    if (target.configValue) {
-      if (target.value === '') {
-        const tmpConfig = { ...this._config };
-        delete tmpConfig[target.configValue];
-        this._config = tmpConfig;
-      } else {
-        this._config = {
-          ...this._config,
-          [target.configValue]: target.checked !== undefined ? target.checked : target.value,
-        };
+
+    let value = target.checked !== undefined ? target.checked : target.value;
+
+    if (configValue === 'decimals') {
+      value = Number.parseInt(value, 10);
+
+      if (!Number.isFinite(value)) {
+        value = 1;
       }
+
+      value = Math.max(0, Math.min(3, value));
     }
+
+    if (this[`_${configValue}`] === value) {
+      return;
+    }
+
+    if (value === '') {
+      const tmpConfig = { ...this._config };
+      delete tmpConfig[configValue];
+      this._config = tmpConfig;
+    } else {
+      this._config = {
+        ...this._config,
+        [configValue]: value,
+      };
+    }
+
     fireEvent(this, 'config-changed', { config: this._config });
   }
 
@@ -160,9 +247,12 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
       margin-bottom: 16px;
       display: block;
     }
+
     mwc-formfield {
       padding-bottom: 8px;
+      display: block;
     }
+
     mwc-switch {
       --mdc-theme-secondary: var(--switch-checked-color);
     }
