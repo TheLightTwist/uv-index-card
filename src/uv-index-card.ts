@@ -315,6 +315,7 @@ export class UVIndexCard extends LitElement {
     return html`
       <svg
         class="uv-pyramid"
+        style="display:block;width:120px;max-width:100%;height:auto;aspect-ratio:162/136"
         viewBox="0 0 162 136"
         preserveAspectRatio="xMidYMid meet"
         version="1.1"
@@ -522,6 +523,7 @@ export class UVIndexCard extends LitElement {
       .compact-pyramid {
         justify-content: flex-end;
         height: 100%;
+        overflow: visible;
       }
 
       .icon-card {
@@ -534,21 +536,23 @@ export class UVIndexCard extends LitElement {
       }
 
       .uv-pyramid {
-        width: 100%;
+        width: var(--uv-index-card-pyramid-size, 120px);
+        max-width: 100%;
         height: auto;
-        max-width: var(--uv-index-card-pyramid-size, 120px);
         aspect-ratio: 162 / 136;
         display: block;
-        flex: 0 1 auto;
+        flex: 0 0 auto;
       }
 
       .compact-pyramid .uv-pyramid {
-        max-width: var(--uv-index-card-compact-pyramid-size, 112px);
+        width: var(--uv-index-card-compact-pyramid-size, 112px);
+        max-width: 100%;
         max-height: 104px;
       }
 
       .icon-card .uv-pyramid {
-        max-width: var(--uv-index-card-pyramid-size, 64px);
+        width: var(--uv-index-card-pyramid-size, 64px);
+        max-width: 100%;
       }
 
       .uv-segment {
