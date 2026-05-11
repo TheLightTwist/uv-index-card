@@ -364,7 +364,17 @@ export class UVIndexCard extends LitElement {
   }
 
   private _formatUvIndex(uvIndex: number): string {
-    return uvIndex.toFixed(this._decimals);
+    const decimals = this._decimals;
+    const language = this.hass?.locale?.language || this.config.language || undefined;
+
+    try {
+      return uvIndex.toLocaleString(language, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+    } catch (e) {
+      return uvIndex.toFixed(decimals);
+    }
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
@@ -399,6 +409,10 @@ export class UVIndexCard extends LitElement {
         box-sizing: border-box;
         height: 100%;
         overflow: hidden;
+      }
+
+      ha-card.layout-compact {
+        min-height: 140px;
       }
 
       .full-card {
@@ -457,6 +471,7 @@ export class UVIndexCard extends LitElement {
 
       .compact-name {
         color: var(--primary-text-color);
+        font-family: var(--ha-font-family-body, var(--primary-font-family));
         font-size: var(--ha-card-header-font-size, 16px);
         font-weight: 500;
         line-height: 20px;
@@ -468,6 +483,7 @@ export class UVIndexCard extends LitElement {
 
       .compact-index {
         color: var(--primary-text-color);
+        font-family: var(--ha-font-family-body, var(--primary-font-family));
         font-size: 32px;
         font-weight: 400;
         line-height: 36px;
@@ -477,6 +493,7 @@ export class UVIndexCard extends LitElement {
       .compact-risk {
         margin-top: 4px;
         color: var(--secondary-text-color);
+        font-family: var(--ha-font-family-body, var(--primary-font-family));
         font-size: 14px;
         font-weight: 400;
         line-height: 18px;
