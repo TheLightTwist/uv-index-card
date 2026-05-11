@@ -328,14 +328,31 @@ export class UVIndexCard extends LitElement {
             const active = uvIndex >= segment.threshold;
             return html`
               <polygon
-                class=${`uv-segment risk-${segment.risk.replace('_', '-')} ${active ? 'active' : ''}`}
+                class="uv-segment"
                 points=${segment.points}
+                fill=${active ? this._riskColor(segment.risk) : this._idleColor}
               ></polygon>
             `;
           })}
         </g>
       </svg>
     `;
+  }
+
+  private get _idleColor(): string {
+    return '#ededed';
+  }
+
+  private _riskColor(risk: UVRisk): string {
+    const colors: Record<UVRisk, string> = {
+      low: 'green',
+      moderate: 'yellow',
+      high: 'orange',
+      very_high: 'red',
+      extreme: 'blueviolet',
+    };
+
+    return colors[risk];
   }
 
   private _riskForIndex(uvIndex: number): UVRisk {
@@ -535,32 +552,7 @@ export class UVIndexCard extends LitElement {
       }
 
       .uv-segment {
-        fill: var(--disabled-text-color, #ededed);
-        opacity: 0.35;
-      }
-
-      .uv-segment.active {
         opacity: 1;
-      }
-
-      .risk-low.active {
-        fill: green;
-      }
-
-      .risk-moderate.active {
-        fill: yellow;
-      }
-
-      .risk-high.active {
-        fill: orange;
-      }
-
-      .risk-very-high.active {
-        fill: red;
-      }
-
-      .risk-extreme.active {
-        fill: blueviolet;
       }
     `;
   }
