@@ -74,9 +74,6 @@ export class UVIndexCard extends LitElement {
     this.config = {
       name: 'UV Index',
       layout: 'full',
-      show_name: true,
-      show_index: true,
-      show_risk: true,
       decimals: 1,
       show_warning: false,
       show_error: false,
@@ -109,10 +106,6 @@ export class UVIndexCard extends LitElement {
     }
 
     const uvIndex = this._parseUvIndex(entityState.state);
-
-    if (uvIndex === undefined) {
-      return this._showWarning('UV index entity state is unavailable');
-    }
 
     const layout = this._layout;
 
@@ -181,10 +174,10 @@ export class UVIndexCard extends LitElement {
     `;
   }
 
-  private _renderFull(uvIndex: number): TemplateResult {
-    const risk = this._riskForIndex(uvIndex);
-    const showIndex = this.config.show_index ?? true;
-    const showRisk = this.config.show_risk ?? true;
+  private _renderFull(uvIndex?: number): TemplateResult {
+    const risk = uvIndex === undefined ? undefined : this._riskForIndex(uvIndex);
+    const showIndex = this._showIndexForLayout('full');
+    const showRisk = this._showRiskForLayout('full');
 
     return html`
       <div class="full-card">
@@ -211,11 +204,11 @@ export class UVIndexCard extends LitElement {
     `;
   }
 
-  private _renderCompact(uvIndex: number): TemplateResult {
-    const risk = this._riskForIndex(uvIndex);
-    const showName = this.config.show_name ?? true;
-    const showIndex = this.config.show_index ?? true;
-    const showRisk = this.config.show_risk ?? true;
+  private _renderCompact(uvIndex?: number): TemplateResult {
+    const risk = uvIndex === undefined ? undefined : this._riskForIndex(uvIndex);
+    const showName = this._showNameForLayout('compact');
+    const showIndex = this._showIndexForLayout('compact');
+    const showRisk = this._showRiskForLayout('compact');
 
     return html`
       <div class="compact-card">
@@ -229,15 +222,31 @@ export class UVIndexCard extends LitElement {
     `;
   }
 
-  private _renderIcon(uvIndex: number): TemplateResult {
+  private _renderIcon(uvIndex?: number): TemplateResult {
+    const risk = uvIndex === undefined ? undefined : this._riskForIndex(uvIndex);
+    const showName = this._showNameForLayout('icon');
+    const showIndex = this._showIndexForLayout('icon');
+    const showRisk = this._showRiskForLayout('icon');
+    const showText = showName || showIndex || showRisk;
+
     return html`
-      <div class="icon-card">
-        ${this._renderPyramid(uvIndex)}
+      <div class=${`icon-card ${showText ? 'has-icon-text' : ''}`}>
+        ${showText
+          ? html`
+              <div class="icon-content">
+                ${showName ? html`<div class="icon-name">${this.config.name || 'UV Index'}</div>` : nothing}
+                ${showIndex ? html`<div class="icon-index">${this._formatUvIndex(uvIndex)}</div>` : nothing}
+                ${showRisk ? html`<div class="icon-risk">${this._riskText(risk)}</div>` : nothing}
+              </div>
+            `
+          : nothing}
+        <div class="icon-pyramid">${this._renderPyramid(uvIndex)}</div>
       </div>
     `;
   }
 
-  private _renderPyramid(uvIndex: number): TemplateResult {
+  private _renderPyramid(uvIndex?: number): TemplateResult {
+    const activeIndex = uvIndex ?? -1;
     const idle = this._idleColor;
     const low = this._riskColor('low');
     const moderate = this._riskColor('moderate');
@@ -257,19 +266,19 @@ export class UVIndexCard extends LitElement {
       >
         <title>UV</title>
         <g id="UV-Index-Triangle" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <polygon points="81.9537723 2.99975159 77.2979826 10.4602611 86.4956236 10.4362484" fill=${uvIndex >= 12 ? extreme : idle}></polygon>
-          <polygon points="92.8108692 20.7694268 70.8323051 20.8356688 76.2650231 12.1248408 87.5102538 12.0925478" fill=${uvIndex >= 11 ? extreme : idle}></polygon>
-          <polygon points="99.1192621 31.0946561 64.3589492 31.2022994 69.7916672 22.4914713 93.8186467 22.4177771" fill=${uvIndex >= 10 ? veryHigh : idle}></polygon>
-          <polygon points="105.434921 41.428828 57.8945103 41.5778726 63.3272282 32.8670446 100.134305 32.751121" fill=${uvIndex >= 9 ? veryHigh : idle}></polygon>
-          <polygon points="111.751405 51.7620892 51.4218149 51.9450828 56.8627892 43.2334268 106.442533 43.0769299" fill=${uvIndex >= 8 ? veryHigh : idle}></polygon>
-          <polygon points="118.058972 62.0882293 44.9567154 62.3192484 50.3894333 53.6092484 112.758356 53.4105223" fill=${uvIndex >= 7 ? high : idle}></polygon>
-          <polygon points="124.367447 72.4134586 38.4834421 72.686707 43.9244164 63.975879 119.066832 63.7440318" fill=${uvIndex >= 6 ? high : idle}></polygon>
-          <polygon points="130.17996 81.9276369 32.5388267 82.2331783 37.4513908 74.3512038 125.38216 74.0696752" fill=${uvIndex >= 5 ? moderate : idle}></polygon>
-          <polygon points="136.495618 92.2528662 26.0661313 92.6006369 31.4988492 83.8889809 131.195003 83.5759873" fill=${uvIndex >= 4 ? moderate : idle}></polygon>
-          <polygon points="142.804011 102.58621 19.6010318 102.96793 25.0337497 94.2562739 137.503396 93.9093312" fill=${uvIndex >= 3 ? moderate : idle}></polygon>
-          <polygon points="149.111661 112.912268 13.1285841 113.342841 18.5613021 104.632013 143.819302 104.242013" fill=${uvIndex >= 2 ? low : idle}></polygon>
-          <polygon points="155.427732 123.23758 6.66373231 123.717834 12.0964503 115.007006 150.127117 114.560701" fill=${uvIndex >= 1 ? low : idle}></polygon>
-          <polygon points="5.62342462 125.373554 0.999834872 132.792662 161.264189 132.792662 156.435014 124.893299" fill=${low}></polygon>
+          <polygon points="81.9537723 2.99975159 77.2979826 10.4602611 86.4956236 10.4362484" fill=${activeIndex >= 12 ? extreme : idle}></polygon>
+          <polygon points="92.8108692 20.7694268 70.8323051 20.8356688 76.2650231 12.1248408 87.5102538 12.0925478" fill=${activeIndex >= 11 ? extreme : idle}></polygon>
+          <polygon points="99.1192621 31.0946561 64.3589492 31.2022994 69.7916672 22.4914713 93.8186467 22.4177771" fill=${activeIndex >= 10 ? veryHigh : idle}></polygon>
+          <polygon points="105.434921 41.428828 57.8945103 41.5778726 63.3272282 32.8670446 100.134305 32.751121" fill=${activeIndex >= 9 ? veryHigh : idle}></polygon>
+          <polygon points="111.751405 51.7620892 51.4218149 51.9450828 56.8627892 43.2334268 106.442533 43.0769299" fill=${activeIndex >= 8 ? veryHigh : idle}></polygon>
+          <polygon points="118.058972 62.0882293 44.9567154 62.3192484 50.3894333 53.6092484 112.758356 53.4105223" fill=${activeIndex >= 7 ? high : idle}></polygon>
+          <polygon points="124.367447 72.4134586 38.4834421 72.686707 43.9244164 63.975879 119.066832 63.7440318" fill=${activeIndex >= 6 ? high : idle}></polygon>
+          <polygon points="130.17996 81.9276369 32.5388267 82.2331783 37.4513908 74.3512038 125.38216 74.0696752" fill=${activeIndex >= 5 ? moderate : idle}></polygon>
+          <polygon points="136.495618 92.2528662 26.0661313 92.6006369 31.4988492 83.8889809 131.195003 83.5759873" fill=${activeIndex >= 4 ? moderate : idle}></polygon>
+          <polygon points="142.804011 102.58621 19.6010318 102.96793 25.0337497 94.2562739 137.503396 93.9093312" fill=${activeIndex >= 3 ? moderate : idle}></polygon>
+          <polygon points="149.111661 112.912268 13.1285841 113.342841 18.5613021 104.632013 143.819302 104.242013" fill=${activeIndex >= 2 ? low : idle}></polygon>
+          <polygon points="155.427732 123.23758 6.66373231 123.717834 12.0964503 115.007006 150.127117 114.560701" fill=${activeIndex >= 1 ? low : idle}></polygon>
+          <polygon points="5.62342462 125.373554 0.999834872 132.792662 161.264189 132.792662 156.435014 124.893299" fill=${uvIndex === undefined ? idle : low}></polygon>
         </g>
       </svg>
     `;
@@ -310,12 +319,32 @@ export class UVIndexCard extends LitElement {
     return 'low';
   }
 
-  private _riskText(risk: UVRisk): string {
+  private _riskText(risk?: UVRisk): string {
+    if (risk === undefined) {
+      return 'N/A';
+    }
+
     const key = risk === 'very_high' ? 'uv_levels.very_high' : `uv_levels.${risk}`;
     return localize(key, '', '', this.config.language);
   }
 
-  private _formatUvIndex(uvIndex: number): string {
+  private _showNameForLayout(layout: UVIndexCardLayout): boolean {
+    return this.config.show_name ?? layout !== 'icon';
+  }
+
+  private _showIndexForLayout(layout: UVIndexCardLayout): boolean {
+    return this.config.show_index ?? layout !== 'icon';
+  }
+
+  private _showRiskForLayout(layout: UVIndexCardLayout): boolean {
+    return this.config.show_risk ?? layout !== 'icon';
+  }
+
+  private _formatUvIndex(uvIndex?: number): string {
+    if (uvIndex === undefined) {
+      return 'N/A';
+    }
+
     const decimals = this._decimals;
     const language = this.hass?.locale?.language || this.config.language || undefined;
 
@@ -464,6 +493,58 @@ export class UVIndexCard extends LitElement {
         box-sizing: border-box;
         min-height: 80px;
         padding: 8px;
+        display: grid;
+        grid-template-columns: minmax(48px, 1fr);
+        gap: 0;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-card.has-icon-text {
+        grid-template-columns: minmax(0, max-content) minmax(48px, 1fr);
+        gap: 8px;
+      }
+
+      .icon-content {
+        min-width: 0;
+        max-width: 96px;
+        overflow: hidden;
+      }
+
+      .icon-name {
+        color: var(--primary-text-color);
+        font-family: var(--ha-font-family-body, var(--primary-font-family));
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 16px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .icon-index {
+        color: var(--primary-text-color);
+        font-family: var(--ha-font-family-body, var(--primary-font-family));
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 22px;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+
+      .icon-risk {
+        color: var(--secondary-text-color);
+        font-family: var(--ha-font-family-body, var(--primary-font-family));
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .icon-pyramid {
+        min-width: 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -485,7 +566,7 @@ export class UVIndexCard extends LitElement {
         max-height: 104px;
       }
 
-      .icon-card .uv-pyramid {
+      .icon-pyramid .uv-pyramid {
         max-width: var(--uv-index-card-pyramid-size, 64px);
       }
 

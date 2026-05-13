@@ -63,15 +63,15 @@ export class UVIndexCardEditor extends ScopedRegistryHost(LitElement) implements
   }
 
   private get _show_name(): boolean {
-    return this._config?.show_name ?? true;
+    return this._config?.show_name ?? this._layout !== 'icon';
   }
 
   private get _show_index(): boolean {
-    return this._config?.show_index ?? true;
+    return this._config?.show_index ?? this._layout !== 'icon';
   }
 
   private get _show_risk(): boolean {
-    return this._config?.show_risk ?? true;
+    return this._config?.show_risk ?? this._layout !== 'icon';
   }
 
   private get _show_warning(): boolean {
