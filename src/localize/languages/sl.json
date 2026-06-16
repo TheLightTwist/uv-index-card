@@ -1,0 +1,17 @@
+{
+  "common": {
+    "version": "Različica",
+    "invalid_configuration": "Neveljavna konfiguracija",
+    "show_warning": "Prikaži opozorilo",
+    "show_error": "Prikaži napako",
+    "uv_index": "UV Indeks",
+    "uv_risk": "UV Tveganje"
+  },
+  "uv_levels": {
+    "low": "Nizko",
+    "moderate": "Zmerno",
+    "high": "Visoko",
+    "very_high": "Zelo visoko",
+    "extreme": "Ekstremno"
+  }
+}

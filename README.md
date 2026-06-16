@@ -1,61 +1,76 @@
-# UV Index card
+# UV Index Card
 
-A custom Lovelace card that displays the UV index and risk level in [Home Assistant](https://home-assistant.io/).
+A custom Lovelace card for Home Assistant that renders the current UV index as a pyramid-style visual card. This fork continues active development of the original project with an updated visual editor, additional layouts, and broader language support.
 
-[![GitHub Release][releases-shield]][releases-link] [![GitHub Release Date][release-date-shield]][releases-link] [![GitHub Releases][latest-download-shield]][traffic-link] [![GitHub Releases][total-download-shield]][traffic-link]
+[![Release](https://img.shields.io/github/release/tjuuljensen/uv-index-card.svg?style=flat-square)](https://github.com/tjuuljensen/uv-index-card/releases/latest)
+[![Release Date](https://img.shields.io/github/release-date/tjuuljensen/uv-index-card?style=flat-square)](https://github.com/tjuuljensen/uv-index-card/releases/latest)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg?style=flat-square)](https://github.com/hacs/integration)
+[![License](https://img.shields.io/github/license/tjuuljensen/uv-index-card.svg?style=flat-square)](LICENSE)
 
-[![HACS Badge][hacs-shield]][hacs-link] [![HomeAssistant][home-assistant-shield]][home-assistant-link] [![License][license-shield]][license-link]
+## Features
 
-![Project Maintenance][maintenance-shield] [![GitHub Activity][activity-shield]][activity-link] [![Open bugs][bugs-shield]][bugs-link] [![Open enhancements][enhancements-shield]][enhancement-link]
+- Visual Lovelace editor with live preview.
+- `full`, `compact`, and `icon` layouts.
+- Optional name, index, and risk visibility controls.
+- Configurable decimal precision from `0` to `3`.
+- Graceful handling of `unknown`, `unavailable`, and non-numeric states.
+- Tap, hold, and double-tap action support.
+- Extended translation coverage from upstream community PRs.
 
-[![Community Forum][forum-shield]][forum-link]
+## Screenshots
+
+### Full Layout
+
+![Full layout](docs/images/uv-index-card.png)
+
+### Compact Layout
+
+![Compact layout](docs/images/uv-index-card-compact.png)
+
+### Icon Layout
+
+![Icon layout](docs/images/uv-index-card-icon.png)
+
+### Visual Editor
+
+![Visual editor](docs/images/uv-index-card-editor.png)
 
 ## Installation
 
-### [HACS](https://hacs.xyz/) (Home Assistant Community Store)
+### HACS
 
-1. Go to HACS page on your Home Assistant instance
-1. Select `Frontend`
-1. Press add icon and search for `uv-index`
-1. Select UV Index Card repo and install
-1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>)
-1. Add uv-index-card to your page
+1. Open HACS in Home Assistant.
+2. Add `tjuuljensen/uv-index-card` as a custom frontend repository if needed.
+3. Install `UV Index Card`.
+4. Refresh the browser.
+5. Add the card from the Lovelace card picker.
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=t1gr0u&repository=uv-index-card&category=plugin)
+[![Open your Home Assistant instance and open this repository inside HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=tjuuljensen&repository=uv-index-card&category=plugin)
 
 ### Manual
 
-1. Download the 'uv-index-card.js' from the latest [release](https://github.com/t1gr0u/uv-index-card/releases) (with right click, save link as)
-1. Place the downloaded file on your Home Assistant machine in the `config/www` folder (when there is no `www` folder in the folder where your `configuration.yaml` file is, create it and place the file there)
-1. In Home Assistant go to `Configuration->Lovelace Dashboards->Resources` (When there is no `resources` tag on the `Lovelace Dashboard` page, enable advanced mode in your account settings, and retry this step)
-1. Add a new resource
-   1. Url = `/local/uv-index-card.js`
-   1. Resource type = `module`
-1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>)
-1. Add uv-index-card to your page
+1. Download `uv-index-card.js` from the latest [release](https://github.com/tjuuljensen/uv-index-card/releases/latest).
+2. Copy it to `<config>/www/uv-index-card.js`.
+3. Add this resource in Lovelace:
 
-## Using the card
+```yaml
+url: /local/uv-index-card.js
+type: module
+```
 
-- Add the card with the visual editor
-- Or add the card manually with the following (minimal) configuration:
+4. Refresh the browser.
+5. Add the card to a dashboard.
+
+## Quick Start
+
+### Minimal Configuration
 
 ```yaml
 type: custom:uv-index-card
 entity: sensor.weather_station_uv
 ```
 
-## Lovelace Examples
-
-### Default
-
-```yaml
-type: custom:uv-index-card
-entity: sensor.weather_station_uv
-```
-
-![Default](https://github.com/t1gr0u/uv-index-card/blob/master/docs/images/uv-index-card.png?raw=true)
-
-### Compact layout
+### Compact Example
 
 ```yaml
 type: custom:uv-index-card
@@ -68,15 +83,7 @@ show_index: true
 show_risk: true
 ```
 
-### Icon-only layout
-
-```yaml
-type: custom:uv-index-card
-entity: sensor.openuv_current_uv_index
-layout: icon
-```
-
-### Icon layout with text
+### Icon Example
 
 ```yaml
 type: custom:uv-index-card
@@ -88,91 +95,63 @@ show_index: true
 show_risk: false
 ```
 
-`show_name`, `show_index`, and `show_risk` default to `true` for `full` and `compact` layouts, and `false` for the `icon` layout. When the source sensor is `unknown`, `unavailable`, empty, or non-numeric, the card stays visible and text values render as `N/A`. The `decimals` option controls UV index formatting and defaults to `1`.
+## Configuration
 
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `type` | string | Yes |  | Must be `custom:uv-index-card` |
+| `entity` | string | Yes |  | UV index entity to render |
+| `name` | string | No | `UV Index` | Card title or label |
+| `language` | string | No | Home Assistant language | Force a translation code |
+| `layout` | string | No | `full` | One of `full`, `compact`, `icon` |
+| `show_name` | boolean | No | `true` for `full` and `compact`, `false` for `icon` | Show the configured name |
+| `show_index` | boolean | No | `true` for `full` and `compact`, `false` for `icon` | Show the numeric UV value |
+| `show_risk` | boolean | No | `true` for `full` and `compact`, `false` for `icon` | Show the localized risk label |
+| `decimals` | number | No | `1` | Decimal precision from `0` to `3` |
+| `tap_action` | object | No | `more-info` | Action to run on tap |
+| `hold_action` | object | No |  | Action to run on hold |
+| `double_tap_action` | object | No |  | Action to run on double tap |
 
-## Options
+### Layout Notes
 
-| Name              | Type    | Requirement  | Description                                 | Default             |
-| ----------------- | ------- | ------------ | ------------------------------------------- | ------------------- |
-| type              | string  | **Required** | `custom:uv-index-card`                      |                     |
-| name              | string  | **Optional** | Card name                                   | `UV Index`          |
-| entity            | string  | **Required** | Home Assistant entity ID.                   | `none`              |
-| language          | string  | **Optional** | The 2 character that determines the language| `en`                |
-| layout            | string  | **Optional** | Card layout: `full`, `compact`, or `icon`   | `full`              |
-| show_name         | boolean | **Optional** | Show the configured card name               | `true`, `false` for `icon` |
-| show_index        | boolean | **Optional** | Show the numeric UV index                   | `true`, `false` for `icon` |
-| show_risk         | boolean | **Optional** | Show the localized UV risk label            | `true`, `false` for `icon` |
-| decimals          | number  | **Optional** | Number of decimal places, from `0` to `3`   | `1`                 |
-| tap_action        | object  | **Optional** | Action to take on tap                       | `action: more-info` |
-| hold_action       | object  | **Optional** | Action to take on hold                      | `none`              |
-| double_tap_action | object  | **Optional** | Action to take on double tap                | `none`              |
+- `full` uses a card header and shows the pyramid beside the text content.
+- `compact` keeps the content denser and works better in horizontal or stacked layouts.
+- `icon` prioritizes the pyramid and can optionally include short text.
+- If the entity state is `unknown`, `unavailable`, empty, or non-numeric, the card stays visible and renders `N/A`.
 
-## Action Options
+## Supported Languages
 
-| Name            | Type   | Requirement  | Description                                                                                                                            | Default     |
-| --------------- | ------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| action          | string | **Required** | Action to perform (more-info, toggle, call-service, navigate url, none)                                                                | `more-info` |
-| navigation_path | string | **Optional** | Path to navigate to (e.g. /lovelace/0/) when action defined as navigate                                                                | `none`      |
-| url             | string | **Optional** | URL to open on click when action is url. The URL will open in a new tab                                                                | `none`      |
-| service         | string | **Optional** | Service to call (e.g. media_player.media_play_pause) when action defined as call-service                                               | `none`      |
-| service_data    | object | **Optional** | Service data to include (e.g. entity_id: media_player.bedroom) when action defined as call-service                                     | `none`      |
-| haptic          | string | **Optional** | Haptic feedback _success, warning, failure, light, medium, heavy, selection_                                                           | `none`      |
-| repeat          | number | **Optional** | How often to repeat the `hold_action` in milliseconds.                                                                                 | `none`      |
+| Language | Code | Contributor |
+| --- | --- | --- |
+| Catalan | `ca` | [@carlesfernandez](https://github.com/carlesfernandez) |
+| Czech | `cs` | [@MiisaTrAnCe](https://github.com/MiisaTrAnCe) |
+| German | `de` | [@t1gr0u](https://github.com/t1gr0u) |
+| English | `en` | [@t1gr0u](https://github.com/t1gr0u) |
+| Spanish | `es` | [@vmbajop](https://github.com/vmbajop) |
+| Finnish | `fi` | [@PolarFox](https://github.com/PolarFox) |
+| French | `fr` | [@t1gr0u](https://github.com/t1gr0u) |
+| Hebrew | `he` | [@EarthGoodness](https://github.com/EarthGoodness) |
+| Hungarian | `hu` | [@erelke](https://github.com/erelke) |
+| Italian | `it` | [@SiriosDev](https://github.com/SiriosDev) |
+| Norwegian Bokmal | `nb` | [@kilrolf](https://github.com/kilrolf) |
+| Dutch | `nl` | [@WoBBeLnl](https://github.com/WoBBeLnl) |
+| Polish | `pl` | [@madkrystiank](https://github.com/madkrystiank) |
+| Portuguese | `pt` | [@ViPeR5000](https://github.com/viper5000) |
+| Brazilian Portuguese | `pt-BR` | [@hudsonbrendon](https://github.com/hudsonbrendon) |
+| Slovak | `sk` | [@milandzuris](https://github.com/milandzuris) |
+| Slovenian | `sl` | [@palfyz](https://github.com/palfyz) |
+| Swedish | `sv` | [@el97](https://github.com/el97) |
 
+## Development
 
-### Language
+```bash
+npm ci
+npm run build
+```
 
-The following languages are supported:
+The repository includes GitHub Actions for build validation, HACS validation, and release asset generation.
 
-| Language  | Yaml value | Supported | Translated by                                                                       |
-| --------- | ---------- | --------- | ----------------------------------------------------------------------------------- |
-| Czech     | `cs`       | v1.2.1    | [@MiisaTrAnCe](https://github.com/MiisaTrAnCe)                                      |
-| Dutch     | `nl`       | v1.2.0    | [@WoBBeLNL](https://github.com/WoBBeLnl)                                            |
-| English   | `en`       | v1.0.0    | [@t1gr0u](https://github.com/t1gr0u)                                                |
-| French    | `fr`       | v1.0.0    | [@t1gr0u](https://github.com/t1gr0u)                                                |
-| German    | `de`       | v1.0.0    | [@t1gr0u](https://github.com/t1gr0u)                                                |
-| Hungarian | `hu`       | v1.2.1    | [@erelke](https://github.com/erelke)                                                |
-| Italian   | `it`       | v1.2.0    | [@SiriosDev](https://github.com/SiriosDev)                                          |
-| Portuguese| `pt`       | v1.2.0    | [@ViPeR5000](https://github.com/viper5000)                                          |
-| Swedish   | `sv`       | v1.2.1    | [@el97](https://github.com/el97)                                                    |
+## Credits
 
-#### How to add a language
-
-If you wish to add a language please follow these steps:
-
-* Go into the `src/localize/languages/` folder
-* Duplicate the `en.json` and name it as the language that you would like to add by following the [2 characters ISO language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
-* Then modify the `localize.ts` file, located in `src/localize/` to include your language file.
-* Update the `Readme.md`, found in `src/` to include your language and your Github username in the language table.
-
-## Thanks to
-
-- [@iantrich](https://www.github.com/iantrich) for the [boiler-plate card](https://github.com/custom-cards/boilerplate-card), which got me started
-
-
-## Support
-
-Clone and create a PR to help make the card even better.
-
-[releases-shield]: https://img.shields.io/github/release/t1gr0u/uv-index-card.svg?style=flat-square
-[releases-link]: https://github.com/t1gr0u/uv-index-card/releases/latest
-[release-date-shield]: https://img.shields.io/github/release-date/t1gr0u/uv-index-card?style=flat-square
-[latest-download-shield]: https://img.shields.io/github/downloads/t1gr0u/uv-index-card/latest/total?style=flat-square&label=downloads%20latest%20release
-[total-download-shield]: https://img.shields.io/github/downloads/t1gr0u/uv-index-card/total?style=flat-square&label=total%20views
-[traffic-link]: https://github.com/t1gr0u/uv-index-card/graphs/traffic
-[hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=flat-square
-[hacs-link]: https://github.com/custom-components/hacs
-[home-assistant-shield]: https://img.shields.io/badge/Home%20Assistant-visual%20editor/yaml-green?style=flat-square
-[home-assistant-link]: https://www.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/custom-cards/boilerplate-card.svg?style=flat-square
-[license-link]: LICENSE.md
-[activity-shield]: https://img.shields.io/github/commit-activity/y/t1gr0u/uv-index-card.svg?style=flat-square
-[activity-link]: https://github.com/t1gr0u/uv-index-card/commits/master
-[bugs-shield]: https://img.shields.io/github/issues/t1gr0u/uv-index-card/bug?color=red&style=flat-square&label=bugs
-[bugs-link]: https://github.com/t1gr0u/uv-index-card/labels/bug
-[enhancements-shield]: https://img.shields.io/github/issues/t1gr0u/uv-index-card/enhancement?color=blue&style=flat-square&label=enhancements
-[enhancement-link]: https://github.com/t1gr0u/uv-index-card/labels/enhancement
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg?style=flat-square
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
-[forum-link]: https://community.home-assistant.io/t/uv-index-card/543446
+- Original card by [@t1gr0u](https://github.com/t1gr0u)
+- Based on the custom card boilerplate from [@iantrich](https://github.com/iantrich)
