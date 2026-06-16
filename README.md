@@ -125,6 +125,7 @@ show_risk: false
 | --- | --- | --- |
 | Catalan | `ca` | [@carlesfernandez](https://github.com/carlesfernandez) |
 | Czech | `cs` | [@MiisaTrAnCe](https://github.com/MiisaTrAnCe) |
+| Danish | `da` | [@tjuuljensen](https://github.com/tjuuljensen) |
 | German | `de` | [@t1gr0u](https://github.com/t1gr0u) |
 | English | `en` | [@t1gr0u](https://github.com/t1gr0u) |
 | Spanish | `es` | [@vmbajop](https://github.com/vmbajop) |
