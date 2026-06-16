@@ -2,10 +2,11 @@
 
 A custom Lovelace card for Home Assistant that renders the current UV index as a pyramid-style visual card. This fork continues active development of the original project with an updated visual editor, additional layouts, and broader language support.
 
-[![Release](https://img.shields.io/github/release/tjuuljensen/uv-index-card.svg?style=flat-square)](https://github.com/tjuuljensen/uv-index-card/releases/latest)
-[![Release Date](https://img.shields.io/github/release-date/tjuuljensen/uv-index-card?style=flat-square)](https://github.com/tjuuljensen/uv-index-card/releases/latest)
 [![HACS Default](https://img.shields.io/badge/HACS-Default-orange.svg?style=flat-square)](https://github.com/hacs/integration)
-[![License](https://img.shields.io/github/license/tjuuljensen/uv-index-card.svg?style=flat-square)](LICENSE)
+
+[Latest Release](https://github.com/tjuuljensen/uv-index-card/releases/latest) |
+[Release History](https://github.com/tjuuljensen/uv-index-card/releases) |
+[License](LICENSE)
 
 ## Features
 
