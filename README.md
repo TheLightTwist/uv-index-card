@@ -66,8 +66,6 @@ decimals: 1
 show_name: true
 show_index: true
 show_risk: true
-show_warning: false
-show_error: false
 ```
 
 ### Icon-only layout
@@ -99,8 +97,6 @@ show_risk: false
 | ----------------- | ------- | ------------ | ------------------------------------------- | ------------------- |
 | type              | string  | **Required** | `custom:uv-index-card`                      |                     |
 | name              | string  | **Optional** | Card name                                   | `UV Index`          |
-| show_error        | boolean | **Optional** | Show what an error looks like for the card  | `false`             |
-| show_warning      | boolean | **Optional** | Show what a warning looks like for the card | `false`             |
 | entity            | string  | **Required** | Home Assistant entity ID.                   | `none`              |
 | language          | string  | **Optional** | The 2 character that determines the language| `en`                |
 | layout            | string  | **Optional** | Card layout: `full`, `compact`, or `icon`   | `full`              |
