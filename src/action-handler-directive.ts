@@ -1,5 +1,5 @@
 import { noChange } from 'lit';
-import { AttributePart, directive, Directive, DirectiveParameters } from 'lit/directive';
+import { AttributePart, directive, Directive, DirectiveParameters } from 'lit/directive.js';
 
 import { ActionHandlerDetail, ActionHandlerOptions } from 'custom-card-helpers/dist/types';
 import { fireEvent } from 'custom-card-helpers';
@@ -23,8 +23,7 @@ declare global {
 class ActionHandler extends HTMLElement implements ActionHandler {
   public holdTime = 500;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public ripple: any;
+  private ripple: HTMLDivElement;
 
   protected timer?: number;
 
@@ -34,7 +33,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
 
   constructor() {
     super();
-    this.ripple = document.createElement('mwc-ripple');
+    this.ripple = document.createElement('div');
   }
 
   public connectedCallback(): void {
@@ -48,7 +47,15 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     });
 
     this.appendChild(this.ripple);
-    this.ripple.primary = true;
+    Object.assign(this.ripple.style, {
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      background: 'rgba(255, 255, 255, 0.2)',
+      opacity: '0',
+      transform: 'scale(0.2)',
+      transition: 'transform 180ms ease-out, opacity 180ms ease-out',
+    });
 
     ['touchcancel', 'mouseout', 'mouseup', 'touchmove', 'mousewheel', 'wheel', 'scroll'].forEach((ev) => {
       document.addEventListener(
@@ -150,14 +157,13 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       top: `${y}px`,
       display: null,
     });
-    this.ripple.disabled = false;
-    this.ripple.active = true;
-    this.ripple.unbounded = true;
+    this.ripple.style.opacity = '1';
+    this.ripple.style.transform = 'scale(1)';
   }
 
   private stopAnimation(): void {
-    this.ripple.active = false;
-    this.ripple.disabled = true;
+    this.ripple.style.opacity = '0';
+    this.ripple.style.transform = 'scale(0.2)';
     this.style.display = 'none';
   }
 }
